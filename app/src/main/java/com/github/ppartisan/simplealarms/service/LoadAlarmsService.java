@@ -3,7 +3,7 @@ package com.github.ppartisan.simplealarms.service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.github.ppartisan.simplealarms.data.DatabaseHelper;
 import com.github.ppartisan.simplealarms.model.Alarm;

@@ -1,7 +1,7 @@
 package com.github.ppartisan.simplealarms.data;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.ppartisan.simplealarms.model.Alarm;
 

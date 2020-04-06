@@ -2,7 +2,7 @@ package com.github.ppartisan.simplealarms.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 import android.util.SparseBooleanArray;
 
 import java.lang.annotation.Retention;
@@ -62,6 +62,7 @@ public final class Alarm implements Parcelable{
     private String label;
     private SparseBooleanArray allDays;
     private boolean isEnabled;
+    private int tablets,timesADay;
 
     public Alarm() {
         this(NO_ID);

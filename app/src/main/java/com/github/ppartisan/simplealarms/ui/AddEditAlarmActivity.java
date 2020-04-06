@@ -3,9 +3,9 @@ package com.github.ppartisan.simplealarms.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.github.ppartisan.simplealarms.R;
@@ -19,6 +19,8 @@ import java.lang.annotation.RetentionPolicy;
 public final class AddEditAlarmActivity extends AppCompatActivity {
 
     public static final String ALARM_EXTRA = "alarm_extra";
+    public static final String ALARM_EXTRA2 = "alarm_extra2";
+    public static final String ALARM_EXTRA3 = "alarm_extra3";
     public static final String MODE_EXTRA = "mode_extra";
 
     @Retention(RetentionPolicy.SOURCE)
@@ -42,7 +44,7 @@ public final class AddEditAlarmActivity extends AppCompatActivity {
         if(getSupportFragmentManager().findFragmentById(R.id.edit_alarm_frag_container) == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.edit_alarm_frag_container, AddEditAlarmFragment.newInstance(alarm))
+                    .add(R.id.edit_alarm_frag_container, AddEditAlarmFragment.newInstance(alarm,getAlarm(),getAlarm()))
                     .commit();
         }
 
@@ -104,5 +106,5 @@ public final class AddEditAlarmActivity extends AppCompatActivity {
         i.putExtra(MODE_EXTRA, mode);
         return i;
     }
-
+    
 }

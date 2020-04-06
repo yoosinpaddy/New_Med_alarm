@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">SimpleAlarms</string>
+    <string name="app_name">Medication alarm</string>
 
     <!-- Main Activity/Fragment -->
-    <string name="empty_view_text">Press the Floating Action Button to add an alarm!</string>
+    <string name="empty_view_text">Press the Floating Action Button to add a medical alarm!</string>
 
     <!-- Edit Alarm Activity/Fragment -->
     <string name="time">Time</string>
@@ -39,5 +39,14 @@
 
     <!-- Notification -->
     <string name="channel_name">Simple Alarms</string>
+    <string name="medication_name">Medication Name</string>
+    <string name="duration">Duration</string>
+    <string name="multiply">X</string>
+    <string name="quantity">Quantity</string>
+    <string name="times_in_a_day">Times in a day</string>
+    <string name="start_time">Start Time</string>
+    <string name="_1">1</string>
+    <string name="third_time">Third Time</string>
+    <string name="second_time">Second Time</string>
 
 </resources>
