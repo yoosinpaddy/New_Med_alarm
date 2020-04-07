@@ -29,6 +29,7 @@ public final class AddEditAlarmActivity extends AppCompatActivity {
     public static final int EDIT_ALARM = 1;
     public static final int ADD_ALARM = 2;
     public static final int UNKNOWN = 0;
+    public static int key = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public final class AddEditAlarmActivity extends AppCompatActivity {
         if(getSupportFragmentManager().findFragmentById(R.id.edit_alarm_frag_container) == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.edit_alarm_frag_container, AddEditAlarmFragment.newInstance(alarm,getAlarm(),getAlarm()))
+                    .add(R.id.edit_alarm_frag_container, AddEditAlarmFragment.newInstance(alarm,getAlarm(),getAlarm(),key))
                     .commit();
         }
 
@@ -53,8 +54,10 @@ public final class AddEditAlarmActivity extends AppCompatActivity {
     private Alarm getAlarm() {
         switch (getMode()) {
             case EDIT_ALARM:
+                key=1;
                 return getIntent().getParcelableExtra(ALARM_EXTRA);
             case ADD_ALARM:
+                key=0;
                 final long id = DatabaseHelper.getInstance(this).addAlarm();
                 LoadAlarmsService.launchLoadAlarmsService(this);
                 return new Alarm(id);

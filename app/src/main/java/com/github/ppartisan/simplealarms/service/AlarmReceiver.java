@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import static android.app.NotificationManager.IMPORTANCE_HIGH;
+import static android.app.NotificationManager.IMPORTANCE_MAX;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.KITKAT;
@@ -43,6 +44,7 @@ public final class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        Log.e(TAG, "onReceive: start" );
         final Alarm alarm = intent.getBundleExtra(BUNDLE_EXTRA).getParcelable(ALARM_KEY);
         if(alarm == null) {
             Log.e(TAG, "Alarm is null", new NullPointerException());
@@ -63,7 +65,7 @@ public final class AlarmReceiver extends BroadcastReceiver {
         builder.setContentText(alarm.getLabel());
         builder.setTicker(alarm.getLabel());
         builder.setVibrate(new long[] {1000,500,1000,500,1000,500});
-        builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+        builder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM));
         builder.setContentIntent(launchAlarmLandingPage(context, alarm));
         builder.setAutoCancel(true);
         builder.setPriority(Notification.PRIORITY_HIGH);
@@ -76,9 +78,11 @@ public final class AlarmReceiver extends BroadcastReceiver {
 
     //Convenience method for setting a notification
     public static void setReminderAlarm(Context context, Alarm alarm) {
+        Log.e(TAG, "setReminderAlarm: start" );
 
         //Check whether the alarm is set to run on any days
         if(!AlarmUtils.isAlarmActive(alarm)) {
+            Log.e(TAG, "setReminderAlarm: is Inactive" );
             //If alarm not set to run on any days, cancel any existing notifications for this alarm
             cancelReminderAlarm(context, alarm);
             return;
@@ -201,6 +205,7 @@ public final class AlarmReceiver extends BroadcastReceiver {
                     new NotificationChannel(CHANNEL_ID, name, IMPORTANCE_HIGH);
             channel.enableVibration(true);
             channel.setVibrationPattern(new long[] {1000,500,1000,500,1000,500});
+            channel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM),null);
             channel.setBypassDnd(true);
             mgr.createNotificationChannel(channel);
         }
@@ -213,16 +218,19 @@ public final class AlarmReceiver extends BroadcastReceiver {
     }
 
     private static class ScheduleAlarm {
+        private static final String TAG = "ScheduleAlarm";
 
         @NonNull private final Context ctx;
         @NonNull private final AlarmManager am;
 
         private ScheduleAlarm(@NonNull AlarmManager am, @NonNull Context ctx) {
+            Log.e(TAG, "ScheduleAlarm: constructor" );
             this.am = am;
             this.ctx = ctx;
         }
 
         static ScheduleAlarm with(Context context) {
+            Log.e(TAG, "with: contect" );
             final AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             if(am == null) {
                 throw new IllegalStateException("AlarmManager is null");
@@ -232,6 +240,7 @@ public final class AlarmReceiver extends BroadcastReceiver {
 
         void schedule(Alarm alarm, PendingIntent pi) {
             if(SDK_INT > LOLLIPOP) {
+                Log.e(TAG, "schedule: now"+alarm.getTime() );
                 am.setAlarmClock(new AlarmClockInfo(alarm.getTime(), launchAlarmLandingPage(ctx, alarm)), pi);
             } else if(SDK_INT > KITKAT) {
                 am.setExact(AlarmManager.RTC_WAKEUP, alarm.getTime(), pi);

@@ -30,6 +30,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:visibility="gone"
             android:text="@string/launch_main_activity"
             tools:text="Load Main Activity"
             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored" />
@@ -39,6 +40,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="#ffffff"
             android:text="@string/dismiss"
             tools:text="Dismiss"
             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored" />

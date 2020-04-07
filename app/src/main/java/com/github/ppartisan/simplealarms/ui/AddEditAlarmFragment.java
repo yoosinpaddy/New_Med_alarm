@@ -41,12 +41,14 @@ public final class AddEditAlarmFragment extends Fragment {
     private EditText mLabel,tablets,timeADay;
     private CheckBox mMon, mTues, mWed, mThurs, mFri, mSat, mSun;
     View v;
-    public static AddEditAlarmFragment newInstance(Alarm alarm,Alarm alarm2,Alarm alarm3) {
+    int key=0;//add
+    public static AddEditAlarmFragment newInstance(Alarm alarm, Alarm alarm2, Alarm alarm3, int key) {
 
         Bundle args = new Bundle();
         args.putParcelable(AddEditAlarmActivity.ALARM_EXTRA, alarm);
         args.putParcelable(AddEditAlarmActivity.ALARM_EXTRA2, alarm2);
         args.putParcelable(AddEditAlarmActivity.ALARM_EXTRA3, alarm3);
+        args.putInt("key", key);
 
         AddEditAlarmFragment fragment = new AddEditAlarmFragment();
         fragment.setArguments(args);
@@ -64,6 +66,7 @@ public final class AddEditAlarmFragment extends Fragment {
         final Alarm alarm = getAlarm();
         final Alarm alarm2 = getAlarm2();
         final Alarm alarm3 = getAlarm3();
+        key=getArguments().getInt("key");
 
         mTimePicker = (TimePicker) v.findViewById(R.id.edit_alarm_time_picker);
         mTimePicker2 = (TimePicker) v.findViewById(R.id.edit_alarm_time_picker2);
@@ -145,7 +148,7 @@ public final class AddEditAlarmFragment extends Fragment {
 
                 }else if (((Integer.parseInt(timeADay.getText().toString().trim())))==2){
                     ((RelativeLayout)v.findViewById(R.id.rl1)).setVisibility(View.VISIBLE);
-                    ((RelativeLayout)v.findViewById(R.id.rl2)).setVisibility(View.VISIBLE);
+                    ((RelativeLayout)v.findViewById(R.id.rl3)).setVisibility(View.VISIBLE);
                 }else if (((Integer.parseInt(timeADay.getText().toString().trim())))==3){
                     ((RelativeLayout)v.findViewById(R.id.rl1)).setVisibility(View.VISIBLE);
                     ((RelativeLayout)v.findViewById(R.id.rl2)).setVisibility(View.VISIBLE);
@@ -222,11 +225,15 @@ public final class AddEditAlarmFragment extends Fragment {
         final Calendar time3 = Calendar.getInstance();
         time.set(Calendar.MINUTE, ViewUtils.getTimePickerMinute(mTimePicker));
         time.set(Calendar.HOUR_OF_DAY, ViewUtils.getTimePickerHour(mTimePicker));
+        time.set(Calendar.SECOND, 0);
         time2.set(Calendar.MINUTE, ViewUtils.getTimePickerMinute2(mTimePicker2));
         time2.set(Calendar.HOUR_OF_DAY, ViewUtils.getTimePickerHour2(mTimePicker2));
+        time2.set(Calendar.SECOND, 0);
         time3.set(Calendar.MINUTE, ViewUtils.getTimePickerMinute3(mTimePicker3));
         time3.set(Calendar.HOUR_OF_DAY, ViewUtils.getTimePickerHour3(mTimePicker3));
+        time3.set(Calendar.SECOND, 0);
         alarm.setTime(time.getTimeInMillis());
+        Log.e(TAG, "save: "+time.getTimeInMillis() );
         alarm2.setTime(time2.getTimeInMillis());
         alarm3.setTime(time3.getTimeInMillis());
 
@@ -261,6 +268,7 @@ public final class AddEditAlarmFragment extends Fragment {
 
         final int rowsUpdated,rowsUpdated2,rowsUpdated3;
         final int messageId,messageId2,messageId3;
+        int rowsDeleted;
         switch (number_of_times){
             case 1:
                 rowsUpdated = DatabaseHelper.getInstance(getContext()).updateAlarm(alarm);
@@ -268,6 +276,15 @@ public final class AddEditAlarmFragment extends Fragment {
                 Toast.makeText(getContext(), messageId, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "save: "+number_of_times );
                 AlarmReceiver.setReminderAlarm(getContext(), alarm);
+
+                if (key==0){
+                    //Cancel any pending notifications for this alarm
+                    AlarmReceiver.cancelReminderAlarm(getContext(), alarm2);
+                    AlarmReceiver.cancelReminderAlarm(getContext(), alarm3);
+
+                    DatabaseHelper.getInstance(getContext()).deleteAlarm(alarm2);
+                    DatabaseHelper.getInstance(getContext()).deleteAlarm(alarm3);
+                }
                 break;
             case 2:
                 rowsUpdated = DatabaseHelper.getInstance(getContext()).updateAlarm(alarm);
@@ -278,6 +295,12 @@ public final class AddEditAlarmFragment extends Fragment {
                 Toast.makeText(getContext(), messageId3, Toast.LENGTH_SHORT).show();
                 AlarmReceiver.setReminderAlarm(getContext(), alarm);
                 AlarmReceiver.setReminderAlarm(getContext(), alarm2);
+
+                if (key==0){
+                    //Cancel any pending notifications for this alarm
+                    AlarmReceiver.cancelReminderAlarm(getContext(), alarm2);
+                    DatabaseHelper.getInstance(getContext()).deleteAlarm(alarm2);
+                }
                 break;
             case 3:
                 rowsUpdated = DatabaseHelper.getInstance(getContext()).updateAlarm(alarm);
