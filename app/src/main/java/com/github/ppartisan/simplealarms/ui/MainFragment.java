@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +31,7 @@ import static com.github.ppartisan.simplealarms.ui.AddEditAlarmActivity.buildAdd
 
 public final class MainFragment extends Fragment
         implements LoadAlarmsReceiver.OnAlarmsLoadedListener {
-
+    private static final String TAG = "MainFragment";
     private LoadAlarmsReceiver mReceiver;
     private AlarmsAdapter mAdapter;
 
@@ -76,6 +78,16 @@ public final class MainFragment extends Fragment
     public void onStop() {
         super.onStop();
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    public void onResume() {
+        Log.e(TAG, "onResume: " );
+        if (mReceiver!=null){
+            Log.e(TAG, "onResume: " );
+            mReceiver = new LoadAlarmsReceiver(this);
+        }
+        super.onResume();
     }
 
     @Override

@@ -35,11 +35,12 @@ import java.util.GregorianCalendar;
 
 import static android.content.ContentValues.TAG;
 
-public final class AddEditAlarmFragment extends Fragment {
+public final class AddEditAlarmFragment extends Fragment implements IOnBackPressed{
 
     private TimePicker mTimePicker,mTimePicker2,mTimePicker3;
     private EditText mLabel,tablets,timeADay;
     private CheckBox mMon, mTues, mWed, mThurs, mFri, mSat, mSun;
+    Boolean hasSaved=false;
     View v;
     int key=0;//add
     public static AddEditAlarmFragment newInstance(Alarm alarm, Alarm alarm2, Alarm alarm3, int key) {
@@ -212,6 +213,7 @@ public final class AddEditAlarmFragment extends Fragment {
     }
 
     private void save() {
+        hasSaved=true;
 
         final Alarm alarm = getAlarm();
         final Alarm alarm2 = getAlarm2();
@@ -232,16 +234,24 @@ public final class AddEditAlarmFragment extends Fragment {
         time3.set(Calendar.MINUTE, ViewUtils.getTimePickerMinute3(mTimePicker3));
         time3.set(Calendar.HOUR_OF_DAY, ViewUtils.getTimePickerHour3(mTimePicker3));
         time3.set(Calendar.SECOND, 0);
-        alarm.setTime(time.getTimeInMillis());
-        Log.e(TAG, "save: "+time.getTimeInMillis() );
+        Log.e(TAG, "save: "+alarm.getId() );
+        Log.e(TAG, "save: "+ViewUtils.getTimePickerHour(mTimePicker) );
+        Log.e(TAG, "save: tm "+time.getTimeInMillis() );
         alarm2.setTime(time2.getTimeInMillis());
         alarm3.setTime(time3.getTimeInMillis());
-
-        String label=mLabel.getText().toString()+" "+tablets.getText().toString().trim()+" X "+timeADay.getText().toString().trim();
+        alarm.setTime(time.getTimeInMillis());
+        Log.e(TAG, "save: at "+alarm.getTime() );
+        String label;
+        if (mLabel.getText().toString().contains(" X ")){
+            label=mLabel.getText().toString();
+        }else{
+            label=mLabel.getText().toString()+" "+tablets.getText().toString().trim()+" X "+timeADay.getText().toString().trim();
+        }
 
         alarm.setLabel(label);
         alarm2.setLabel(label);
         alarm3.setLabel(label);
+        Log.e(TAG, "save: aL "+alarm.getTime() );
         alarm.setDay(Alarm.MON, mMon.isChecked());
         alarm.setDay(Alarm.TUES, mTues.isChecked());
         alarm.setDay(Alarm.WED, mWed.isChecked());
@@ -249,6 +259,7 @@ public final class AddEditAlarmFragment extends Fragment {
         alarm.setDay(Alarm.FRI, mFri.isChecked());
         alarm.setDay(Alarm.SAT, mSat.isChecked());
         alarm.setDay(Alarm.SUN, mSun.isChecked());
+        Log.e(TAG, "save: aD "+alarm.getTime() );
 
         alarm2.setDay(Alarm.MON, mMon.isChecked());
         alarm2.setDay(Alarm.TUES, mTues.isChecked());
@@ -269,12 +280,13 @@ public final class AddEditAlarmFragment extends Fragment {
         final int rowsUpdated,rowsUpdated2,rowsUpdated3;
         final int messageId,messageId2,messageId3;
         int rowsDeleted;
+        Log.e(TAG, "save: bS "+alarm.getTime() );
         switch (number_of_times){
             case 1:
                 rowsUpdated = DatabaseHelper.getInstance(getContext()).updateAlarm(alarm);
                 messageId = (rowsUpdated == 1) ? R.string.update_complete : R.string.update_failed;
                 Toast.makeText(getContext(), messageId, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "save: "+number_of_times );
+                Log.e(TAG, "save: "+alarm.getTime() );
                 AlarmReceiver.setReminderAlarm(getContext(), alarm);
 
                 if (key==0){
@@ -334,6 +346,13 @@ public final class AddEditAlarmFragment extends Fragment {
             return true;
         }
     }
+
+    @Override
+    public boolean onBackPressed() {
+        Log.e(TAG, "onBackPressed: " );
+        return false;
+    }
+
     private void delete() {
 
         final Alarm alarm = getAlarm();
@@ -373,4 +392,26 @@ public final class AddEditAlarmFragment extends Fragment {
 
     }
 
+
+
+    @Override
+    public void onDetach() {
+        Log.e(TAG, "onDetach: "+hasSaved+key );
+        if (!hasSaved){
+            if (key==0){
+                final Alarm alarm = getAlarm();
+                final Alarm alarm2 = getAlarm2();
+                final Alarm alarm3 = getAlarm3();
+                //Cancel any pending notifications for this alarm
+                AlarmReceiver.cancelReminderAlarm(getContext(), alarm);
+                AlarmReceiver.cancelReminderAlarm(getContext(), alarm2);
+                AlarmReceiver.cancelReminderAlarm(getContext(), alarm3);
+
+                DatabaseHelper.getInstance(getContext()).deleteAlarm(alarm);
+                DatabaseHelper.getInstance(getContext()).deleteAlarm(alarm2);
+                DatabaseHelper.getInstance(getContext()).deleteAlarm(alarm3);
+            }
+        }
+        super.onDetach();
+    }
 }

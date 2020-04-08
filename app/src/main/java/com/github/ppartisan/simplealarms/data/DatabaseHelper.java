@@ -29,7 +29,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_SAT = "sat";
     public static final String COL_SUN = "sun";
     public static final String COL_IS_ENABLED = "is_enabled";
-
+    private static final String TAG = "DatabaseHelper";
     private static DatabaseHelper sInstance = null;
 
     public static synchronized DatabaseHelper getInstance(Context context) {
@@ -80,6 +80,7 @@ public final class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int updateAlarm(Alarm alarm) {
+        Log.e(TAG, "updateAlarm: "+alarm.getTime() );
         final String where = _ID + "=?";
         final String[] whereArgs = new String[] { Long.toString(alarm.getId()) };
         return getWritableDatabase()

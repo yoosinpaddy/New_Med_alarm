@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import android.view.MenuItem;
 
 import com.github.ppartisan.simplealarms.R;
@@ -49,6 +51,21 @@ public final class AddEditAlarmActivity extends AppCompatActivity {
                     .commit();
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        startActivity(new Intent(AddEditAlarmActivity.this, MainActivity.class));
+        super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.edit_alarm_frag_container);
+        if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed) fragment).onBackPressed()) {
+            super.onBackPressed();
+        }
     }
 
     private Alarm getAlarm() {
