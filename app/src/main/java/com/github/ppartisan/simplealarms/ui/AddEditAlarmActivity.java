@@ -78,6 +78,7 @@ public final class AddEditAlarmActivity extends AppCompatActivity {
                 final long id = DatabaseHelper.getInstance(this).addAlarm();
                 LoadAlarmsService.launchLoadAlarmsService(this);
                 return new Alarm(id);
+
             case UNKNOWN:
             default:
                 throw new IllegalStateException("Mode supplied as intent extra for " +
